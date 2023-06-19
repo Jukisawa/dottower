@@ -41,7 +41,7 @@ export class GameService {
         GameService.app = app;
         this.tower = new Tower(app.screen.width / 2, app.screen.height / 2, PIXI.Sprite.from('assets/nia.png'));
         this.tower.setDamage = 50;
-        this.tower.setAttackspeed = 200;
+        this.tower.setAttackspeed = 900;
         this.enemies = [];
         this.projectiles = [];
 
@@ -201,7 +201,7 @@ export class GameService {
                     }, enemySize, enemyVelocity, 'red', PIXI.Sprite.from(this.assets[Math.floor(Math.random() * this.assets.length)]), 100, 1000, true));
                     break;
             }
-        }, 1000);
+        }, 3000);
 
         if (showFPS) this.fps
             .pipe(takeUntil(this.onDestroy))
