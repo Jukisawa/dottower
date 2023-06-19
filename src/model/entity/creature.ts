@@ -4,6 +4,7 @@ import { Entity, Location } from './entity';
 export class Creature extends Entity {
 public lastAttack: number;
 public level: number;
+protected damage: number;
 protected attackSpeed: number;
 protected health: number;
 protected healthTotal: number;
@@ -21,6 +22,7 @@ constructor(location: Location, size: number, velocity: number, color: string, s
     this.lastAttack = performance.now();
     this.attackSpeed = attackSpeed;
     this.level = 1;
+    this.damage = 10;
     this.angle = 90;
 }
 
@@ -47,8 +49,16 @@ public canAttack(): boolean {
     return performance.now() - this.lastAttack > this.attackSpeed;
 }
 
-get damage(): number {
-    return 10;
+get getDamage(): number {
+    return this.damage;
+}
+
+set setDamage(value: number) {
+    this.damage = value;
+}
+
+set setAttackspeed(value: number) {
+    this.attackSpeed = value;
 }
 
 public move(target: Entity) {

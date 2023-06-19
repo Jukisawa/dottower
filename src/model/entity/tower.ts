@@ -12,7 +12,7 @@ export class Tower extends Creature {
     get getExp(): number { return this.exp }
 
     constructor(x: number, y: number, sprite: PIXI.Sprite) {
-        super({ x, y }, 30, 6, 'lime', sprite, 100, 1,true);
+        super({ x, y }, 30, 6, 'lime', sprite, 100000, 1,true);
 
         this.mana = 50;
         this.manaTotal = 50;

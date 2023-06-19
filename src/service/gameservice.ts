@@ -19,8 +19,7 @@ const showFPS = false;
  * @description
  */
 export class GameService {
-    assets = [
-        'assets/nia.png',
+    assets = [        
         'assets/ganyu.png',
         'assets/annie.png',
         'assets/rem.png',
@@ -41,6 +40,8 @@ export class GameService {
     constructor(app: PIXI.Application) {
         GameService.app = app;
         this.tower = new Tower(app.screen.width / 2, app.screen.height / 2, PIXI.Sprite.from('assets/nia.png'));
+        this.tower.setDamage = 50;
+        this.tower.setAttackspeed = 200;
         this.enemies = [];
         this.projectiles = [];
 
@@ -82,12 +83,12 @@ export class GameService {
                 const projectile = new Projectile(
                     this.tower.x,
                     this.tower.y,
-                    this.tower.damage,
+                    this.tower.getDamage,
                     '#FF00EC',
-                    PIXI.Sprite.from('https://www.pngfind.com/pngs/m/20-203501_sprite-i-made-as-its-source-image-gloucester.png'),
+                    PIXI.Sprite.from('assets/bullet.png'),
                     closestEnemy,
                     100000,
-                    1
+                    3
                 );
 
                 this.projectiles.push(projectile);
@@ -127,9 +128,12 @@ export class GameService {
         });
 
         this.projectiles = this.projectiles
-            .filter(e => e.isAlive)
-            .map(e => {
-                return e;
+            .filter(e => {
+                if (!e.isAlive) {
+                    e.destroy();
+                }
+                else
+                    return e.isAlive
             });
     }
 
@@ -142,7 +146,7 @@ export class GameService {
 
             if (element.canAttack()) {
                 if (Math.abs(element.x - this.tower.x) < 30 && Math.abs(element.y - this.tower.y) < 30) {
-                    this.tower.changeState('hp', -element.damage);
+                    this.tower.changeState('hp', -element.getDamage);
                     element.lastAttack = performance.now();
                 }
             }
