@@ -1,1 +1,21 @@
-# dottower
+ToDo's
+
+ - Ability Logic
+   - Ability Superclass with each individual ability as reflection
+   - CoolDown logic with rxjs
+   - Active and Passive abilities
+ - Level Builder
+   - Tile Loader
+   - Collision Loader
+   - Collision Detection
+ - UI
+   - Debug Overlay
+   - Player Character Screen
+   - Player Attribute Screen
+   - Player Inventory
+   - Settings
+ - Draw Logic
+   - Layer (Background/Movable/Foreground/UI)
+ - Player Logic
+   - Exp System
+   - Inventory System
