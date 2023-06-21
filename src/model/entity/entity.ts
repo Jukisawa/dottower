@@ -1,47 +1,80 @@
-import * as PIXI from 'pixi.js';
-import { GameService } from '../../service/gameservice';
+import { Container }                    from 'pixi.js';
+import { Graphics }                     from 'pixi.js';
+import { Sprite, SpriteSource }         from 'pixi.js';
+import { Location }                     from '../../types/base.types';
+import { GameService }                  from '../../service';
 
-export interface Location {
-    x: number;
-    y: number;
+export type Option<Value extends Record<string, any>, ValueType extends EntityType<Value>> = Partial<Record<keyof ValueType, ValueType[keyof ValueType]>>
+export interface EntityType<Value extends Record<string, any>> {
+    size        : number;           // radius
+    angle?      : number;           // visual angle in degrees
+    asset?      : SpriteSource;
+    color?      : string;           // fallback if no asset is provided -> defaults to #fff
+
+    base        : Value;
+    current?    : Value;
 }
+export abstract class Entity<Value extends Record<string, any> = any, ValueType extends EntityType<Value> = any> {
+    protected          visual: Sprite|Graphics;
+    protected readonly values: ValueType;
 
-export abstract class Entity {
+    protected constructor(
+        location    : Location,
+        type        : ValueType,
+        options     : Option<Value, ValueType> = {}
+    ) {
+        this.values = this.mergeValues( type, options );
 
-    protected sprite: PIXI.Sprite;
-    protected color: string;
-    protected velocity: number;
-    protected _alive: boolean;
-    protected size: number;
+        if (this.values.asset) {
+            this.visual         = Sprite.from(this.values.asset);
+            this.visual.anchor.set(0.5);
+            this.visual.width   = this.values.size;
+            this.visual.height  = this.values.size;
+            this.visual.x       = location.x;
+            this.visual.y       = location.y;
+            this.visual.angle   = this.values.angle ?? 0;
+        } else {
+            this.visual = new Graphics();
+            this.visual
+                .beginFill(this.values.color ?? '#fff')
+                .drawCircle(location.x, location.y, this.values.size);
+            this.visual.angle = this.values.angle ?? 0;
+        }
 
-    protected constructor(location: Location, color: string, size: number, sprite: PIXI.Sprite, velocity: number = 1, alive = true) {
-        this.sprite = sprite;
-        this.sprite.anchor.set(0.5);
-        this.sprite.x = location.x;
-        this.sprite.y = location.y;
-        this.velocity = velocity;
-        this.color = color;
-        this.size = size;
-        this._alive = alive;
-        GameService.app.stage.addChild(this.sprite);
+        GameService.instance.addVisualToScene('game', this.visual);
     }
 
     public destroy(): void {
-        GameService.app.stage.removeChild(this.sprite);
+        this.visual.destroy();
     }
 
-    get x(): number { return this.sprite.x }
-    get y(): number { return this.sprite.y }
-    get getLocation(): Location { return { x: this.sprite.x, y: this.sprite.y, } }
-    get isAlive(): boolean { return this.alive }
-    get alive(): boolean { return this._alive; }
-    set alive(alive: boolean) { this._alive = alive;/* if(!alive) console.trace()*/ }
+    public attach( element: Container ): Entity<ValueType> {
+        element.addChild(this.visual);
+        return this;
+    }
 
-    get getSize(): number { return this.size }
+    public get x(): number { return this.visual.x }
+    public get y(): number { return this.visual.y }
 
-    public abstract move(target: Entity): void;
+    public get location(): Location { return { x: this.visual.x, y: this.visual.y, } }
+
+    public get size(): number { return this.values.size }
 
     public distance(target: Location): number {
         return Math.hypot(target.x - this.x, target.y - this.y);
+    }
+
+    private mergeValues<Value extends Record<string, any>, ValueType extends EntityType<Value> = any>( type: ValueType, options: Option<Value, ValueType> ): ValueType {
+        return {
+            ...type,
+            ...Object
+                .keys(options)
+                .reduce( (result: Partial<ValueType>, key) => {
+                    if (options.hasOwnProperty(key) && options[key as keyof ValueType]) {
+                        return { ...result, [key]: options[key as keyof ValueType] }
+                    }
+                    return result;
+                }, {}),
+        };
     }
 }

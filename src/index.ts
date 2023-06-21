@@ -1,5 +1,5 @@
-import * as PIXI from 'pixi.js';
-import { GameService } from './service/gameservice';
+import * as PIXI        from 'pixi.js';
+import { GameService }  from './service';
 
 const app = new PIXI.Application({
     background: '#3d4145',
@@ -8,7 +8,10 @@ const app = new PIXI.Application({
     height: window.innerHeight,
 });
 
+document.body.appendChild(app.view as any);
+document.body.style.padding = '0';
+document.body.style.margin = '0';
 // @ts-ignore
-document.body.appendChild(app.view);
+app.renderer.view.style.position = 'absolute';
 
-const game = new GameService(app);
+new GameService(app);
