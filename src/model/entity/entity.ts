@@ -37,7 +37,9 @@ export abstract class Entity<Value extends Record<string, any> = any, ValueType 
             this.visual = new Graphics();
             this.visual
                 .beginFill(this.values.color ?? '#fff')
-                .drawCircle(location.x, location.y, this.values.size);
+                .drawCircle(0, 0, this.values.size)
+            this.visual.x = location.x;
+            this.visual.y = location.y;
             this.visual.angle = this.values.angle ?? 0;
         }
 

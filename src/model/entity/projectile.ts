@@ -43,11 +43,17 @@ export class Projectile<Value extends ProjectileValue = ProjectileValue, Type ex
             ...this.values.base,
             ...this.values.current,
         };
-
         this.target         = target;
         this.alive          = true;
         this.targetsHit     = 0;
         this.creationTime   = performance.now();
+
+        this.values.angle
+
+        this.visual.angle = this.values.angle ?? Math.atan2(
+            this.visual.y - this.target.y,
+            this.visual.x - this.target.x,
+        );
     }
 
     get base(): Value {
@@ -110,15 +116,21 @@ export class Projectile<Value extends ProjectileValue = ProjectileValue, Type ex
             }
         }
 
-        const angle = Math.atan2(
+        let angle = Math.atan2(
             this.visual.y - this.target.y,
             this.visual.x - this.target.x,
         );
-        const possibleAngle = angle > this.current.maxTurnAngle
-            ? this.current.maxTurnAngle
-            : angle;
+        if (this.visual.angle + this.current.maxTurnAngle < angle)
+            angle = this.visual.angle + this.current.maxTurnAngle;
 
-        this.visual.x -= Math.cos(possibleAngle) * this.current.velocity;
-        this.visual.y -= Math.sin(possibleAngle) * this.current.velocity;
+        if (this.visual.angle - this.current.maxTurnAngle > angle)
+            angle = this.visual.angle - this.current.maxTurnAngle;
+
+        this.visual.angle = angle;
+
+        this.visual.x -= Math.cos(angle) * this.current.velocity;
+        this.visual.y -= Math.sin(angle) * this.current.velocity;
+
+        GameService.instance.drawLine(this.location, { x: this.target.x, y:  this.target.y})
     }
 }

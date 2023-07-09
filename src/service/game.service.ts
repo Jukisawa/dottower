@@ -1,19 +1,21 @@
 import * as PIXI                from 'pixi.js';
-import {Assets, Graphics, Sprite} from 'pixi.js';
+import { Graphics, Sprite }     from 'pixi.js';
+import { Assets }               from 'pixi.js';
 import { Subject }              from 'rxjs';
 import { PlayerResources }      from '../ressource/entity';
 import { EnemyResources }       from '../ressource/entity';
-import { UnitTypeResource }     from '../ressource/ressource.types';
 import { ProjectileResources }  from '../ressource/entity';
+import { UnitTypeResource }     from '../ressource/ressource.types';
 import { Player }               from '../model/entity/player';
-import {Unit, UnitType} from '../model/entity/unit';
+import { Unit }                 from '../model/entity/unit';
 import { Projectile }           from '../model/entity/projectile';
 import { Location }             from '../types/base.types';
 
 /* * * * * * * * * * * * * * * * * * * * * */
 /*                 Options                 */
 /* * * * * * * * * * * * * * * * * * * * * */
-const showFPS = false;
+const showFPS   : boolean = false;
+const debug     : boolean = true;
 
 /**
  * @name        GameService
@@ -318,40 +320,68 @@ export class GameService {
     }
 
     protected events(): void {
-        const variationY = Math.floor((Math.random() - 0.5) * this.pixi.screen.height);
-        const variationX = Math.floor((Math.random() - 0.5) * this.pixi.screen.width);
-
         setInterval((_: any) => {
+            const variationY = Math.floor((Math.random() - 0.5) * this.pixi.screen.height);
+            const variationX = Math.floor((Math.random() - 0.5) * this.pixi.screen.width);
+
             const res = this.getRandomEnemyType();
             switch (Math.floor(Math.random() * 4)) {
                 case 0:
                     this.enemies.push(new Unit({
                         x: res.size,
                         y: this.pixi.screen.height / 2 + variationY,
-                    }, this.getRandomEnemyType()));
+                    }, res));
                     break;
 
                 case 1:
                     this.enemies.push(new Unit({
                         x: this.pixi.screen.width + res.size,
                         y: this.pixi.screen.height / 2 + variationY,
-                    }, this.getRandomEnemyType()));
+                    }, res));
                     break;
 
                 case 2:
                     this.enemies.push(new Unit({
                         x: this.pixi.screen.width / 2 + variationX,
                         y: -res.size,
-                    }, this.getRandomEnemyType()));
+                    }, res));
                     break;
 
                 case 3:
                     this.enemies.push(new Unit({
                         x: this.pixi.screen.width / 2 + variationX,
                         y: this.pixi.screen.height + res.size,
-                    }, this.getRandomEnemyType()));
+                    }, res));
                     break;
             }
-        }, 3000);
+        }, 250);
     }
+
+    public drawLine( locA: Location, locB: Location): void {
+        if (!debug) return;
+
+        const line = new Graphics();
+        line.lineStyle(1, 0xffffff);
+        line.moveTo(locA.x, locA.y);
+        line.lineTo(locB.x, locB.y);
+        this.scenes['game'].addChild(line);
+
+        const dotA = new Graphics();
+        dotA.beginFill('#a90c0c');
+        dotA.drawCircle(locA.x, locA.y, 5);
+        this.scenes['game'].addChild(dotA);
+
+        const dotB = new Graphics();
+        dotB.beginFill('#a90c0c');
+        dotB.drawCircle(locB.x, locB.y, 5);
+        this.scenes['game'].addChild(dotB);
+
+        setTimeout( () => {
+            line.destroy();
+            dotA.destroy();
+            dotB.destroy();
+        }, 10 );
+
+    }
+
 }

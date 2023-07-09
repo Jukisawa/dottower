@@ -13,5 +13,8 @@ document.body.style.padding = '0';
 document.body.style.margin = '0';
 // @ts-ignore
 app.renderer.view.style.position = 'absolute';
+// @ts-ignore
+app.view.addEventListener( 'mousedown', event => console.log( event ))
+
 
 new GameService(app);

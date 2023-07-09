@@ -4,11 +4,11 @@ export const base: PlayerTypeResource = {
     base: {
         level       : 1,
         exp         : 0,
-        attack      : 12,
-        attackRange : 500,
+        attack      : 25,
+        attackRange : 780,
         hp          : 100,
         armor       : 3,
-        attackSpeed : 1000,
+        attackSpeed : 80,
         velocity    : 0,
     },
     size        : 35,               // radius

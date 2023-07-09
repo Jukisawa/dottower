@@ -44,7 +44,7 @@ export class Player extends Unit<PlayerValue, PlayerType> {
     public changeValue(type: 'hp'|'exp', value: number) {
         switch (type) {
             case 'exp':
-                this.current.exp += value;
+                this.values.current.exp += value;
                 return;
             default:
                 super.changeValue(type, value);
@@ -52,9 +52,9 @@ export class Player extends Unit<PlayerValue, PlayerType> {
     }
 
     public playerReset(): void {
-        this.current.hp     = this.base.hp;
-        this.current.exp    = this.base.exp;
-        this.current.level  = this.base.level;
+        this.values.current.hp     = this.base.hp;
+        this.values.current.exp    = this.base.exp;
+        this.values.current.level  = this.base.level;
 
         this.alive = true;
     }

@@ -2,6 +2,9 @@ import { Entity, Option }                   from './entity';
 import { EntityType }                       from './entity';
 import { Location }                         from '../../types/base.types';
 
+import { GameService }                      from '../../service';
+
+
 export interface UnitValue {
     level       : number;
     attack      : number;
@@ -39,7 +42,7 @@ export class Unit<Value extends UnitValue = UnitValue, Type extends UnitType<Val
     }
 
     public get current(): Value {
-        return { ...this.values.current};
+        return { ...this.values.current };
     }
 
     public get isAlive(): boolean {
@@ -49,8 +52,8 @@ export class Unit<Value extends UnitValue = UnitValue, Type extends UnitType<Val
     public changeValue(type: 'hp', value: number): void {
         switch (type) {
             case 'hp':
-                this.current[type] += value;
-                if (this.current[type] <= 0)
+                this.values.current[type] += value;
+                if (this.values.current[type] <= 0)
                     this.alive = false;
                 break;
         }
@@ -64,15 +67,15 @@ export class Unit<Value extends UnitValue = UnitValue, Type extends UnitType<Val
         return performance.now() - this.lastAttack > this.current.attackSpeed;
     }
 
-    public move(target: Entity) {
-        if (this.distance(target.location) < ( this.size + target.size )) return;
+    public move(target: Entity): void {
+
+        if (this.distance(target.location) <= ( this.size + target.size )) return;
 
         const angle = Math.atan2(
             this.visual.y - target.y,
             this.visual.x - target.x,
         );
         this.visual.angle = angle;
-
         this.visual.x -= Math.cos(angle) * this.current.velocity;
         this.visual.y -= Math.sin(angle) * this.current.velocity;
     }
